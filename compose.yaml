@@ -1,0 +1,15 @@
+services:
+  example:
+    build: .
+    develop:
+      # `watch` configuration to update the app
+      watch:
+        # Sync working dir with /app inside container
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+        # Rebuild image on dependency changes
+        - action: rebuild
+          path: ./pyproject.toml

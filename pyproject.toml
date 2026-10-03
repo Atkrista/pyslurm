@@ -1,0 +1,16 @@
+[project]
+name = "pyslurm"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.142.2",
+]
+
+[tool.fastapi]
+entrypoint = "src.main:app"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.10",
+    "ty>=0.0.84",
+]
