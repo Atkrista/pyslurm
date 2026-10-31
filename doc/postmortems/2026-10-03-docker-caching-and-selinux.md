@@ -19,6 +19,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project
 ```
+Note: Resolution of 1. lead to 2. The solutions listed under [Resolutions](##Resolutions] refer to the resolution of these issues encountered one after the other. 
+
 ## Impact
 1. Docker builds are unnecessarily slow resulting in an, avoidable, increase in wait times. 
 
@@ -31,7 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 > `type=AVC msg=audit(1791050216.198:340): avc:  denied  { read } for  pid=67507 comm="main2" name="pyproject.toml" dev="dm-0" ino=7911163 scontext=system_u:system_r:container_t:s0:c863,c1016 tcontext=unconfined_u:object_r:user_home_t:s0 tclass=file permissive=0
 
-The host file system has the SELinux Context label `unconfined_u:object_r:user_home_t` which cannot be accessed from within the container (which expects label `system_u:system_r:container_t`). 
+The host file system has the SELinux Context label `unconfined_u:object_r:user_home_t` which cannot be accessed from within the container (which expects label `system_u:system_r:container_file_t`). 
 
 ## Trigger
 1. Rebuilding the image to reflect changes to project source.
@@ -61,10 +63,6 @@ The host file system has the SELinux Context label `unconfined_u:object_r:user_h
 - `chcon -t TYPE FILE` can be used to temporarily resolve the permission issue but it's not a permanent solution.
 - `semanage fcontext` can be used to make persistent changes to the SELinux context of files but repeating this procedure for an arbitrary number of files can prove to be tedious. And it's not a portable solution. 
 - Additionally, labeling arbitrary host files with a permissive SELinux context can prove disastrous if a compromised container process gains access to sensitive data.
-
-### What went well
-
-### Where we got lucky
 
 ## Timeline
 2026-10-03 (all times NPT or UTC +5:45)
